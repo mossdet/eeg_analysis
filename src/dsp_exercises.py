@@ -8,8 +8,8 @@ from time import sleep, time
 import mne
 
 from cwt import dcmwt, cmwt_serial
-
 from dsp_tools import *
+from datapaths import *
 
 
 def test_convolution():
@@ -882,8 +882,8 @@ def test_multitaper():
     ax.set_title(f"Multitaper")
 
     plt.tight_layout()
-    wm = plt.get_current_fig_manager()
-    wm.window.state('zoomed')
+    fig_name = images_path + "Frequency_Analysis.png"
+    plt.savefig(fig_name, bbox_inches='tight', dpi=150)
     plt.show(block=True)
     plt.close()
 
