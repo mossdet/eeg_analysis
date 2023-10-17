@@ -10,16 +10,17 @@ import mne
 # output: datamatrix
 
 
-def read_raw_micromed_trc(trc_fname, begsample=None, endsample=None):
-    """Reader for Micromed EEG file.
+def read_raw_micromed_trc(trc_fname, sample_start=None, sample_end=None):
+    """
+    Reader for Micromed EEG file.
 
     Parameters
     ----------
     trc_fname : path-like
         Path to the EEG file.
-    begsample : int
+    sample_start : int
         first sample to read.
-    endsample : int
+    sample_end : int
         last sample to read.
 
     Returns
@@ -160,16 +161,16 @@ def read_raw_micromed_trc(trc_fname, begsample=None, endsample=None):
             n_samples_tot = (datend - datbeg) // (n_bytes * n_chann)
 
         # Determine the range of data to read
-        if begsample is None:
-            begsample = 0
-        if endsample is None or endsample >= n_samples_tot:
-            endsample = n_samples_tot-1
+        if sample_start is None:
+            sample_start = 0
+        if sample_end is None or sample_end >= n_samples_tot:
+            sample_end = n_samples_tot-1
 
         fid.seek(data_offset, 0)
-        fid.seek(n_chann*n_bytes*(begsample), 1)
+        fid.seek(n_chann*n_bytes*(sample_start), 1)
 
         n_channs = n_chann
-        n_samples_read = endsample - begsample + 1
+        n_samples_read = sample_end - sample_start + 1
         data = np.zeros((n_channs, n_samples_read), dtype=float)
         for si in range(n_samples_read):
             if n_bytes == 1:

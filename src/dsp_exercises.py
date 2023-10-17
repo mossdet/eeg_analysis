@@ -782,7 +782,7 @@ def test_multitaper():
 
     # Short Time Fourier Transform
     seglen = int(round(fs*0.05))
-    overlaplen = seglen/2
+    overlaplen = int(seglen-1)
     f, t, zx = sig.stft(signal, fs, 'hamming', seglen, overlaplen,
                         nfft=seglen*2, detrend='linear')
     zx = np.abs(zx)
@@ -883,7 +883,7 @@ def test_multitaper():
 
     plt.tight_layout()
     fig_name = images_path + "Frequency_Analysis.png"
-    plt.savefig(fig_name, bbox_inches='tight', dpi=150)
+    plt.savefig(fig_name, bbox_inches='tight', dpi=2000)
     plt.show(block=True)
     plt.close()
 
