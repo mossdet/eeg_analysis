@@ -1,4 +1,4 @@
-# Self-implementation of time_series_analysis techniques
+# Self-implementation of Time Series Analysis Techniques
 
 ### 1.Convoluting a kernel with a vector
 ![Alt-Text](/Images/1_Real_Convolution.png)
@@ -24,5 +24,5 @@
 ### 8.Implement the Short Time Fourier Transform
 ![Alt-Text](/Images/8_Test_STFT.png)
 
-### 9.Compare the ürevious transforms with the implementations from SciPy and MNE-Python
+### 9.Compare the previous transforms with the implementations from SciPy and MNE-Python
 ![Alt-Text](/Images/9_Compare_Time_Frequency_Transforms.png)
