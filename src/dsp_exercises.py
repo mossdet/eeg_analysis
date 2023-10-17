@@ -40,12 +40,12 @@ def test_convolution():
 
     # Perform Convolution
     kernel = kernel - np.mean(kernel)
-    conv_sig = convolve(signal, np.flip(kernel))
-    conv_sig = np.power(conv_sig, 6)
+    conv_sig = convolve_real(signal, np.flip(kernel))
     conv_sig = conv_sig / np.max(conv_sig)
 
-    np_convolve = np.convolve(signal, kernel, mode='valid')
+    # np_convolve = np.convolve(signal, kernel, mode='valid')
     np_convolve = np.convolve(signal, kernel, mode='same')
+    np_convolve = np_convolve / np.max(np_convolve)
 
     fig, axs = plt.subplots(4, 1, figsize=(16, 9))
     fig.suptitle("Convolution Test")
@@ -80,7 +80,15 @@ def test_convolution():
     ax.set_title("Numpy Convoluted signal")
 
     plt.tight_layout()
-    plt.show()
+
+    wm = plt.get_current_fig_manager()
+    wm.window.showMaximized()
+
+    fig_name = images_path + "1_Real_Convolution.png"
+    plt.savefig(fig_name, bbox_inches='tight', dpi=150)
+
+    # plt.show()
+    plt.close()
 
 
 def test_fourier_transform():
@@ -171,65 +179,15 @@ def test_fourier_transform():
     ax.set_title("Scipy iFFT")
 
     plt.tight_layout()
-    plt.show()
 
+    wm = plt.get_current_fig_manager()
+    wm.window.showMaximized()
 
-def test_real_wavelet_compose():
-    fs = 2000
-    inst_freq = 120
-    nr_cycles = 6
-    sig_len = (nr_cycles/inst_freq)*fs
-    gauss_wdw = get_real_gauss_wdw(fs, inst_freq, sig_len)
-    sine_wdw = get_real_sine_wdw(fs, inst_freq, sig_len)
-    morlet_wdw = np.multiply(gauss_wdw, sine_wdw)
+    fig_name = images_path + "2_Fourier_Transform.png"
+    plt.savefig(fig_name, bbox_inches='tight', dpi=150)
 
-    # Construct test signal
-    sig_dur_s = 5.0
-    sine_freqs = np.array([10, 15, 20])
-    signal = []
-    rng = np.random.default_rng()
-    for i in np.arange(len(sine_freqs)):
-        nr_cycles = sig_dur_s*sine_freqs[i]
-        sine_sig = get_sine_wave(fs, sine_freqs[i], nr_cycles)
-        rand_sig = rng.random(len(sine_sig))     # random numbers
-        if len(signal) == 0:
-            # signal = np.add(sine_sig, rand_sig)
-            signal = sine_sig
-        else:
-            # signal += np.add(sine_sig, rand_sig)
-            signal += sine_sig
-
-    signal /= len(sine_freqs)
-    # signal -= np.mean(signal)
-    time = np.arange(sig_len)/fs
-    time -= np.mean(time)
-
-    fig, axs = plt.subplots(3, 1, figsize=(16, 9))
-    fig.suptitle("Real Wavelet Transform")
-
-    ax = axs[0]
-    ax.plot(time, signal, linewidth=1)
-    ax.set_xlim(np.min(time), np.max(time))
-    ax.set_xlabel("Time (s)")
-    ax.set_ylabel("Amplitude")
-    ax.set_title("Signal")
-
-    ax = axs[1]
-    ax.plot(time, sine_wdw, linewidth=1)
-    ax.set_xlim(np.min(time), np.max(time))
-    ax.set_xlabel("Time (s)")
-    ax.set_ylabel("Amplitude")
-    ax.set_title("Sine Wdw")
-
-    ax = axs[2]
-    ax.plot(time, morlet_wdw, linewidth=1)
-    ax.set_xlim(np.min(time), np.max(time))
-    ax.set_xlabel("Time (s)")
-    ax.set_ylabel("Amplitude")
-    ax.set_title("Morlet Wavelet")
-
-    plt.tight_layout()
-    plt.show()
+    # plt.show()
+    plt.close()
 
 
 def test_rmw_transform():
@@ -243,6 +201,9 @@ def test_rmw_transform():
 
     time = np.arange(sig_len)/fs
     time -= np.mean(time)
+
+    time_wdw = np.arange(len(sine_wdw))/fs
+    time_wdw -= np.mean(time_wdw)
 
     fig, axs = plt.subplots(3, 1, figsize=(16, 9))
     fig.suptitle("Morlet Wavelet Creation")
@@ -269,7 +230,14 @@ def test_rmw_transform():
     ax.set_title("Morlet Wavelet")
 
     plt.tight_layout()
-    plt.show()
+    wm = plt.get_current_fig_manager()
+    wm.window.showMaximized()
+
+    fig_name = images_path + "3_Constructed_Real_Morlet_Wavelet.png"
+    plt.savefig(fig_name, bbox_inches='tight', dpi=150)
+
+    # plt.show()
+    plt.close()
 
 
 def test_complex_morlet_wavelet():
@@ -310,8 +278,8 @@ def test_complex_morlet_wavelet():
     # cmwt *= cmwt
     # cmwt /= np.max(cmwt)
 
-    fig, axs = plt.subplots(6, 1, figsize=(16, 9))
-    fig.suptitle("Morlet Wavelet Creation")
+    fig, axs = plt.subplots(5, 1, figsize=(16, 9))
+    fig.suptitle("Complex vs. Real Wavelet Transform")
 
     ax = axs[0]
     ax.plot(time, signal, linewidth=1)
@@ -352,29 +320,40 @@ def test_complex_morlet_wavelet():
     ax.set_ylabel("Power($\\mu V^2$)")
     ax.set_title("Complex Morlet Wavelet Transform")
 
-    ax = axs[5]
-    # ax.pcolormesh(time, freqs, _mat, cmap='viridis', shading='gouraud')
-
     plt.tight_layout()
-    plt.show()
+    wm = plt.get_current_fig_manager()
+    wm.window.showMaximized()
+
+    fig_name = images_path + "4_Complex_vs_Real_Morlet_Wavelet_Transform.png"
+    plt.savefig(fig_name, bbox_inches='tight', dpi=150)
+
+    # plt.show()
+    plt.close()
 
 
-def test_cmwt():
+def test_dcmwt():
     fs = 2000
 
-    pattern_freqs = [60, 80, 100, 150, 200, 250, 350, 400, 450, 500]
-    sig_duration = 10
-    time, signal = compose_signal(fs, sig_duration, pattern_freqs)
+    # Get signal
+    pattern_freqs = np.arange(60, 600, 10)
+    attenuation = 0
+    signal = []
+    for f in pattern_freqs:
+        s = compose_signal(fs, f, attenuation)
+        if len(signal) == 0:
+            signal = s
+        else:
+            signal = np.append(signal, s)
+    time = np.arange(len(signal))/fs
 
     cmwt_freqs = np.arange(60, 600, 10)
-    # cmwt_freqs = np.insert(cmwt_freqs, 0, 1)
-    freqs, cmwtm = cmwt(signal, fs, cmwt_freqs, nr_cycles=7)
+    freqs, cmwtm = dcmwt(signal, fs, cmwt_freqs, nr_cycles=7)
     cmwtm /= np.max(cmwtm)
 
     plot_ok = True
     if plot_ok:
         fig, axs = plt.subplots(2, 1, figsize=(16, 9))
-        fig.suptitle("Morlet Wavelet Transform")
+        fig.suptitle("Discrete Complex Morlet Wavelet Transform")
 
         ax = axs[0]
         ax.plot(time, signal, linewidth=1)
@@ -391,11 +370,18 @@ def test_cmwt():
         # fig.colorbar(im, ax=ax)
 
         title_str = f"{pattern_freqs}"
-        # ax.set_title(title_str)
-        print(title_str)
+        ax.set_title(title_str)
+        # print(title_str)
 
         plt.tight_layout()
-        plt.show()
+        wm = plt.get_current_fig_manager()
+        wm.window.showMaximized()
+
+        fig_name = images_path + "5_Test_Discrete_Complex_Morlet_Wavelet_Transform.png"
+        plt.savefig(fig_name, bbox_inches='tight', dpi=150)
+
+        # plt.show()
+        plt.close()
 
 
 def test_hilbert_transform():
@@ -524,13 +510,17 @@ def test_hilbert_transform():
         ax.set_xlabel("Time (s)")
         ax.set_xticks(np.arange(0, max(time)+0.5, 0.5))
         ax.set_ylabel("Amplitude")
-        ax.set_title(
-            "Bandpassed Signal Power")
+        ax.set_title("Bandpassed Signal Power")
 
         plt.tight_layout()
         wm = plt.get_current_fig_manager()
-        wm.window.state('zoomed')
-        plt.show()
+        wm.window.showMaximized()
+
+        fig_name = images_path + "6_Test_Hilbert_Transform.png"
+        plt.savefig(fig_name, bbox_inches='tight', dpi=150)
+
+        # plt.show()
+        plt.close()
 
 
 def test_fft_for_hfo():
@@ -575,7 +565,9 @@ def test_fft_for_hfo():
         plot_ok = True
         if plot_ok:
             fig, axs = plt.subplot_mosaic([['A', 'B', 'E', 'F'], ['A', 'C', 'E', 'G'], ['A', 'D', 'E', 'H']],
-                                          layout='constrained')
+                                          layout='tight')
+            plt.rcParams.update({'font.size': 8})
+
             fig.suptitle("FFT Test")
             trans = mtransforms.ScaledTranslation(
                 10/72, -5/72, fig.dpi_scale_trans)
@@ -675,9 +667,14 @@ def test_fft_for_hfo():
 
             plt.tight_layout()
             wm = plt.get_current_fig_manager()
-            wm.window.state('zoomed')
-            plt.show(block=True)
+            wm.window.showMaximized()
+
+            fig_name = images_path + "7_FFT_for_HFO.png"
+            plt.savefig(fig_name, bbox_inches='tight', dpi=150)
+
+            # plt.show()
             plt.close()
+            break
 
 
 def plt_ax_label(ax, trans, label):
@@ -714,26 +711,25 @@ def test_stft():
     zx = np.abs(zx)
 
     cmwt_freqs = np.arange(50, 1000, 10)
-    cmwt_freqs, cmwtm = cmwt(signal, fs, cmwt_freqs, nr_cycles=11)
+    cmwt_freqs, cmwtm = dcmwt(signal, fs, cmwt_freqs, nr_cycles=11)
 
     # Plot signals
-    fig, axs = plt.subplot_mosaic(
-        [['A'], ['A'], ['B'], ['B'], ['B'], ['C'], ['C'], ['C']], layout='constrained')
+    fig, axs = plt.subplots(3, 1, figsize=(16, 9))
+    plt.rcParams.update({'font.size': 8})
     trans = mtransforms.ScaledTranslation(10/72, -5/72, fig.dpi_scale_trans)
+
     fig.suptitle("STFT Test")
 
-    label = 'A'
-    ax = axs[label]
-    plt_ax_label(ax, trans, label)
+    ax = axs[0]
+    plt_ax_label(ax, trans, 'A')
     ax.plot(time, signal, linewidth=1)
     ax.set_xlim(np.min(time), np.max(time))
     ax.set_xlabel("Time (s)")
     ax.set_ylabel("Amplitude ($\\mu V$)")
     ax.set_title(f"Signal")
 
-    label = 'B'
-    ax = axs[label]
-    plt_ax_label(ax, trans, label)
+    ax = axs[1]
+    plt_ax_label(ax, trans, 'B')
     ax.pcolormesh(t, f, zx,
                   cmap='viridis', shading='gouraud')
     ax.set_xlim(np.min(time), np.max(time))
@@ -742,9 +738,8 @@ def test_stft():
     ax.set_ylim(50, np.max(f))
     ax.set_title(f"STFT")
 
-    label = 'C'
-    ax = axs[label]
-    plt_ax_label(ax, trans, label)
+    ax = axs[2]
+    plt_ax_label(ax, trans, 'C')
     ax.pcolormesh(time, cmwt_freqs, cmwtm,
                   cmap='viridis', shading='gouraud')
     ax.set_xlim(np.min(time), np.max(time))
@@ -755,8 +750,12 @@ def test_stft():
 
     plt.tight_layout()
     wm = plt.get_current_fig_manager()
-    wm.window.state('zoomed')
-    plt.show(block=True)
+    wm.window.showMaximized()
+
+    fig_name = images_path + "8_Test_STFT.png"
+    plt.savefig(fig_name, bbox_inches='tight', dpi=150)
+
+    # plt.show()
     plt.close()
 
 
@@ -823,13 +822,15 @@ def test_multitaper():
     combined_data = np.multiply(cmwtm, mt_data)
 
     # Plot signals
-    fig, axs = plt.subplot_mosaic(
-        [['A'], ['B'], ['B'], ['C'], ['C'], ['D'], ['D'], ['E'], ['E']], layout='constrained')
+    fig, axs = plt.subplots(5, 1, figsize=(16, 9))
+    plt.rcParams.update({'font.size': 8})
+    trans = mtransforms.ScaledTranslation(10/72, -5/72, fig.dpi_scale_trans)
+    plt.rcParams.update({'font.size': 8})
     trans = mtransforms.ScaledTranslation(10/72, -5/72, fig.dpi_scale_trans)
     fig.suptitle("STFT Test")
 
     label = 'A'
-    ax = axs[label]
+    ax = axs[0]
     plt_ax_label(ax, trans, label)
     ax.plot(time, signal, linewidth=1)
     ax.set_xlim(np.min(time), np.max(time))
@@ -838,7 +839,7 @@ def test_multitaper():
     ax.set_title(f"Signal")
 
     label = 'B'
-    ax = axs[label]
+    ax = axs[1]
     plt_ax_label(ax, trans, label)
     ax.pcolormesh(t, f, zx,
                   cmap='viridis', shading='gouraud')
@@ -849,7 +850,7 @@ def test_multitaper():
     ax.set_title(f"STFT")
 
     label = 'C'
-    ax = axs[label]
+    ax = axs[2]
     plt_ax_label(ax, trans, label)
     ax.pcolormesh(time, cmwt_freqs, cmwtm,
                   cmap='viridis', shading='gouraud')
@@ -860,7 +861,7 @@ def test_multitaper():
     ax.set_title(f"DCWT")
 
     label = 'D'
-    ax = axs[label]
+    ax = axs[3]
     plt_ax_label(ax, trans, label)
     ax.pcolormesh(time, mt_freqs, mne_dwt_data,  # mne_dwt_data,
                   cmap='viridis', shading='gouraud')
@@ -871,7 +872,7 @@ def test_multitaper():
     ax.set_title(f"MNE Python DWT")
 
     label = 'E'
-    ax = axs[label]
+    ax = axs[4]
     plt_ax_label(ax, trans, label)
     ax.pcolormesh(time, mt_freqs, mt_data,
                   cmap='viridis', shading='gouraud')
@@ -882,21 +883,25 @@ def test_multitaper():
     ax.set_title(f"Multitaper")
 
     plt.tight_layout()
-    fig_name = images_path + "Frequency_Analysis.png"
-    plt.savefig(fig_name, bbox_inches='tight', dpi=2000)
-    plt.show(block=True)
+    wm = plt.get_current_fig_manager()
+    wm.window.showMaximized()
+
+    fig_name = images_path + "9_Compare_Time_Frequency_Transforms.png"
+    plt.savefig(fig_name, bbox_inches='tight', dpi=150)
+
+    # plt.show()
     plt.close()
 
 
-# test_convolution()
-# test_fourier_transform()
-# test_wavelet()
-# test_real_wavelet_compose()
-# test_rmw_transform()
-# test_complex_morlet_wavelet()
-# test_cmwt()
-# test_hilbert_transform()
-# test_fft_for_hfo()
-# test_stft()
+plt.rcParams.update({'font.size': 8})
+
+test_convolution()
+test_fourier_transform()
+test_rmw_transform()
+test_complex_morlet_wavelet()
+test_dcmwt()
+test_hilbert_transform()
+test_fft_for_hfo()
+test_stft()
 test_multitaper()
 stop = 1
