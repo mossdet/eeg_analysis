@@ -689,7 +689,7 @@ def test_stft():
     # Get signal
     pattern_freqs = np.arange(100, 510, 50)
     # pattern_freqs = np.tile(pattern_freqs, 2)
-    attenuation = 0.5
+    attenuation = 0
     rand_signal = np.random.random(2*fs)
     signal = rand_signal
     for f in pattern_freqs:
@@ -705,10 +705,13 @@ def test_stft():
 
     # Short Time Fourier Transform
     seglen = int(round(fs*0.05))
-    overlaplen = seglen/2
-    f, t, zx = sig.stft(signal, fs, 'hamming', seglen, overlaplen,
+    overlaplen = (seglen*0.8)
+    # hann, hamming, blackman, bartlett
+    f, t, zx = sig.stft(signal, fs, 'hann', seglen, overlaplen,
                         nfft=seglen*2, detrend='linear')
     zx = np.abs(zx)
+    zx = zx**2
+    zx /= np.max(zx)
 
     cmwt_freqs = np.arange(50, 1000, 10)
     cmwt_freqs, cmwtm = dcmwt(signal, fs, cmwt_freqs, nr_cycles=11)
@@ -781,10 +784,12 @@ def test_multitaper():
 
     # Short Time Fourier Transform
     seglen = int(round(fs*0.05))
-    overlaplen = int(seglen-1)
-    f, t, zx = sig.stft(signal, fs, 'hamming', seglen, overlaplen,
+    overlaplen = (seglen*0.8)
+    # hann, hamming, blackman, bartlett
+    f, t, zx = sig.stft(signal, fs, 'hann', seglen, overlaplen,
                         nfft=seglen*2, detrend='linear')
     zx = np.abs(zx)
+    zx = zx**2
     zx /= np.max(zx)
 
     # Wavelet Transform
@@ -895,6 +900,7 @@ def test_multitaper():
 
 plt.rcParams.update({'font.size': 8})
 
+"""
 test_convolution()
 test_fourier_transform()
 test_rmw_transform()
@@ -903,5 +909,6 @@ test_dcmwt()
 test_hilbert_transform()
 test_fft_for_hfo()
 test_stft()
+"""
 test_multitaper()
 stop = 1
